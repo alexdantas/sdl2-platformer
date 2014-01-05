@@ -2,7 +2,7 @@
 #define PLAYER_H_DEFINED
 
 #include <vector>
-#include "GameObject.hpp"
+#include "FallingObject.hpp"
 #include "DamageableObject.hpp"
 #include "Animation.hpp"
 #include "SFX.hpp"
@@ -10,7 +10,7 @@
 
 /// User-controllable character.
 ///
-class Player: public GameObject,
+class Player: public FallingObject,
               public DamageableObject
 {
 public:
@@ -48,9 +48,6 @@ public:
 	/// Updates internal animation status.
 	void updateAnimation();
 
-	/// _Actually_ moves the player.
-	void commitMovement();
-
 	void setHorizontalLimit(int left, int right);
 	void setVerticalLimit(int top, int bottom);
 
@@ -76,29 +73,9 @@ public:
 
 	void dealDamage();
 
-	/// Next position the player wants to be.
-	///
-	/// At each frame the player updates it's position on this
-	/// *Rectangle*. Then, the *GameState* is responsible for
-	/// allowing this or not.
-	///
-	/// It might now allow it because of collisions. Then the
-	/// player will stay at it's current position.
-	///
-	Rectangle* desiredPosition;
-
 private:
 	/// Window on which the player is shown.
 	Window* window;
-
-	float vx; ///< Speed component of the x axis.
-	float vy; ///< Speed component of the y axis.
-	float ax; ///< Current acceleration on the x axis.
-	float ay; ///< Current acceleration on the y axis.
-
-	/// How much speed the player wants to have on the
-	/// current frame.
-	float targetVx;
 
 	/// Walking speed
 	float acceleration;
@@ -122,9 +99,6 @@ private:
 	bool hasVerticalLimit;
 	int topLimitY;
 	int bottomLimitY;
-
-	/// Is it on air (due to jumping or falling).
-	bool inAir;
 
 	/// Is it currently jumping for the first time.
 	bool isJumping;

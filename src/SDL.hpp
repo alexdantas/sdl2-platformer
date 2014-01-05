@@ -7,7 +7,8 @@
 #include <SDL2/SDL_image.h>      // SDL2_Image
 #include <SDL2/SDL_ttf.h>        // SDL2_TTF
 #include <SDL2/SDL_mixer.h>      // SDL2_Mixer
-#include <SDL2/SDL2_rotozoom.h>  // SDL2_GFX
+#include <SDL2/SDL2_rotozoom.h>      // SDL2_GFX
+#include <SDL2/SDL2_gfxPrimitives.h> // SDL2_GFX
 
 //#include "Timer.hpp"
 #include "Color.hpp"

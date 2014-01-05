@@ -54,8 +54,12 @@ void GameStateGame::load(int stack)
 	                          100,
 	                          Config::getInt("acceleration", 30));
 
-	this->player->setHorizontalLimit(0, this->gameArea->w);
-	this->player->setVerticalLimit(0, this->gameArea->h);
+	this->player->setBoundary(this->gameArea);
+
+	this->block= new Block(this->window,
+	                       30, 30, Color(255, 0, 255));
+
+	this->block->setBoundary(this->gameArea);
 }
 int GameStateGame::unload()
 {
@@ -72,8 +76,8 @@ GameState::StateCode GameStateGame::update(float dt)
 
 	this->updateInput();
 
-	if (this->player)
-		this->player->update(dt);
+	this->player->update(dt);
+	this->block->update(dt);
 
 	// Must be at the end of this function
 	this->checkCollisions();
@@ -82,13 +86,13 @@ GameState::StateCode GameStateGame::update(float dt)
 }
 void GameStateGame::render()
 {
-	if (this->player)
-		this->player->render();
+	this->player->render();
+	this->block->render();
 }
 void GameStateGame::checkCollisions()
 {
-	if (this->player)
-		this->player->commitMovement();
+	this->player->commitMovement();
+	this->block->commitMovement();
 }
 void GameStateGame::updateInput()
 {

@@ -178,6 +178,12 @@ public:
 	///
 	unsigned int getDelta();
 
+	/// Draws a filled `rectangle` with `color`.
+	void drawBox(Rectangle rectangle, Color color);
+
+	/// Shows `text` with the built-in font.
+	void print(std::string text, int x, int y, Color color);
+
 private:
 	/// Window caption (text that shows on the operational
 	/// system's window).

@@ -3,39 +3,31 @@
 #include "InputManager.hpp"
 #include "GameStateGame.hpp"
 #include "Log.hpp"
-#include "PhysicsManager.hpp"
 #include "Config.hpp"
 #include "Utils.hpp"
 
 Player::Player(Window* window, float x, float y, int w, int h, int hp, float acceleration):
-	GameObject(x, y, w, h),
+	FallingObject(x, y, w, h),
 	DamageableObject(hp),
-	desiredPosition(NULL),
 	window(window),
-	vx(0), vy(0),
-	ax(0), ay(0),
 	acceleration(acceleration),
 	stoppedThreshold(acceleration/5.5), // 10% of the speed
-	currentAnimation(NULL),
+	currentAnimation(nullptr),
 	facingDirection(RIGHT),
-	hasHorizontalLimit(false),
-	hasVerticalLimit(false),
-	inAir(false),
 	isJumping(false),
 	isDoubleJumping(false),
 	win(false),
 	thrust(Config::getInt("jump", 33)),
 	damaging(false),
-//	movablePlatform(NULL),
-	jumpSFX(NULL)
+	jumpSFX(nullptr)
 {
-	Animation* tmp = NULL;
+	Animation* tmp = nullptr;
 
 	this->animations.resize(ANIMATION_MAX);
 
 	int animationSpeed = Config::getInt("framerate", 30);
 
-	tmp = new Animation(this->window, "images/lenny/standing.png", 1, animationSpeed);
+	tmp = new Animation(this->window, "images/lenny/standing-left.png", 1, animationSpeed);
 	this->animations[STANDING_LEFT] = tmp;
 
 	tmp = new Animation(this->window, "images/lenny/angry.png", 6, 2);
@@ -59,23 +51,21 @@ Player::Player(Window* window, float x, float y, int w, int h, int hp, float acc
 	tmp = new Animation(this->window, "images/lenny/walking-right.png", 1, animationSpeed);
 	this->animations[FALLING_RIGHT] = tmp;
 
-	tmp = new Animation(this->window, "images/lenny/standing.png", 1, animationSpeed, 1);
+	tmp = new Animation(this->window, "images/lenny/standing-left.png", 1, animationSpeed, 1);
 	this->animations[DAMAGING_LEFT] = tmp;
 
-	tmp = new Animation(this->window, "images/lenny/standing.png", 1, animationSpeed, 1);
+	tmp = new Animation(this->window, "images/lenny/standing-right.png", 1, animationSpeed, 1);
 	this->animations[DAMAGING_RIGHT] = tmp;
 
-	tmp = new Animation(this->window, "images/lenny/standing.png", 1, animationSpeed, 1);
+	tmp = new Animation(this->window, "images/lenny/standing-left.png", 1, animationSpeed, 1);
 	this->animations[DEATH_LEFT] = tmp;
 
-	tmp = new Animation(this->window, "images/lenny/standing.png", 1, animationSpeed, 1);
+	tmp = new Animation(this->window, "images/lenny/standing-right.png", 1, animationSpeed, 1);
 	this->animations[DEATH_RIGHT] = tmp;
 
 	// Let's start by looking at our right.
 	this->currentAnimation = this->animations[STANDING_RIGHT];
 	this->currentAnimation->start();
-
-	this->desiredPosition = new Rectangle();
 
 	this->jumpSFX = new SFX("sounds/sfx/jump.ogg");
 }
@@ -84,24 +74,22 @@ Player::~Player()
 	// TODO TODO BUG HACK OMG
 	//
 	// NEED TO DELETE ALL THINGS I'VE MALLOCED
-
+	delete this->jumpSFX;
 }
 void Player::update(float dt)
 {
-	this->desiredPosition->copy(this->box);
+	this->preUpdate(dt);
 
-	// The acceleration is reseted each frame
-	this->ay = 0;
-	this->targetVx = 0;
+	if (this->boundaryStatus == OFF_BOTTOM)
+	{
+		// If the player hit the bottom
+		// of the screen, will not jump anymore.
+		this->jump(false);
+	}
 
 	// These will define the resulting acceleration
 	// (adding all the forces - input force, gravity force, etc)
 	this->updateInput();
-
-	// Player will ALWAYS suffer gravity.
-	// The collision resolution scheme is resposible for not
-	// letting the player go through stuff.
-	this->vy += (PhysicsManager::gravityAcceleration * dt);
 
 	// HORIZONTAL MOVEMENT
 	// Acceleration rate: How fast the player hits the
@@ -126,7 +114,7 @@ void Player::update(float dt)
 	if (fabs(this->vx) < this->stoppedThreshold)
 		this->vx = 0;
 
-	if(this->damaging)
+	if (this->damaging)
 	{
 		if(this->facingDirection == RIGHT)
 			this->vx = -10;
@@ -160,35 +148,6 @@ void Player::update(float dt)
 
 	// 	this->desiredPosition->addX(platformDelta);
 	// }
-
-	// Limiting, if necessary
-	if (this->hasHorizontalLimit)
-	{
-		if (this->desiredPosition->x < this->leftmostLimitX)
-			this->desiredPosition->x = this->leftmostLimitX;
-
-		if ((this->desiredPosition->x + this->desiredPosition->w) > this->rightmostLimitX)
-			this->desiredPosition->x = (this->rightmostLimitX - this->desiredPosition->w);
-
-		this->desiredPosition->update();
-	}
-
-	if (this->hasVerticalLimit)
-	{
-		if (this->desiredPosition->y < this->topLimitY)
-			this->desiredPosition->y = this->topLimitY;
-
-		if ((this->desiredPosition->y + this->desiredPosition->h) >= this->bottomLimitY)
-		{
-			this->desiredPosition->y = (this->bottomLimitY - this->desiredPosition->h);
-
-			// On this SPECIAL CASE, if the player hit the bottom
-			// of the screen, will not jump anymore.
-			this->jump(false);
-		}
-
-		this->desiredPosition->update();
-	}
 
 	// Updating visible
 	if (this->isAlive)
@@ -253,12 +212,6 @@ void Player::updateInput()
 		         ", " +
 		         Utils::intToString(this->position->y) +
 		         ")");
-
-	// TODO TMP TEMP
-	if (input->isKeyDown(KEY_O))
-		PhysicsManager::gravityAcceleration += 0.5;
-	if (input->isKeyDown(KEY_I))
-		PhysicsManager::gravityAcceleration -= 0.5;
 }
 void Player::updateAnimation()
 {
@@ -266,7 +219,7 @@ void Player::updateAnimation()
 
 	// These will make transitions a lot easier
 	bool willChangeAnimation = false;
-	Animation* tmp = NULL;
+	Animation* tmp = nullptr;
 
 	// I *know* this is fucking plain bad-coding,
 	// but I haven't thought of a cleaner way of expressing this.
@@ -435,29 +388,6 @@ void Player::updateAnimation()
 	// int newFramerate = (int)fabs((this->vx));
 	// this->currentAnimation->setFramerate(newFramerate);
 }
-void Player::commitMovement()
-{
-	// Refreshing position
-	this->position->x -= (this->box->x - this->desiredPosition->x);
-	this->position->y -= (this->box->y - this->desiredPosition->y);
-
-	// Refreshing next bounding box
-	this->box->copy(this->desiredPosition);
-}
-void Player::setHorizontalLimit(int left, int right)
-{
-	this->leftmostLimitX  = left;
-	this->rightmostLimitX = right;
-
-	this->hasHorizontalLimit = true;
-}
-void Player::setVerticalLimit(int top, int bottom)
-{
-	this->topLimitY    = top;
-	this->bottomLimitY = bottom;
-
-	this->hasVerticalLimit = true;
-}
 void Player::jump(bool willJump)
 {
 	if (willJump) // Yay, let's jump!
@@ -470,18 +400,18 @@ void Player::jump(bool willJump)
 		this->inAir     = true;
 		this->isJumping = true;
 
-		// Trampoline mode: If you press the jump button twice
-		//                  in a row it will jump higher than
-		//                  pressing once and then later twice.
+		// // Trampoline mode: If you press the jump button twice
+		// //                  in a row it will jump higher than
+		// //                  pressing once and then later twice.
 		// this->vy += (-1 * this->thrust);
 
-		this->vy = (-0.7 * this->thrust);
+		this->vy = (-1 * this->thrust);
 	}
 	else // Will cancel jumping
 	{
-		this->inAir     = false;
-		this->vy        = 0;
-		this->isJumping = false;
+		this->inAir           = false;
+		this->vy              = 0;
+		this->isJumping       = false;
 		this->isDoubleJumping = false;
 	}
 }
@@ -517,7 +447,7 @@ void Player::dealDamage()
 }
 // void Player::stepIntoMovablePlatform(PlatformMovable* platform)
 // {
-// 	// Watch out for NULL poiters!
+// 	// Watch out for nullptr poiters!
 // 	this->movablePlatform = platform;
 // }
 bool Player::Winned()

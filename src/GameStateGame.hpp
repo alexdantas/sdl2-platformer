@@ -13,6 +13,7 @@
 #include "SFX.hpp"
 #include "Player.hpp"
 #include "Log.hpp"
+#include "Block.hpp"
 
 /// This represents the actual game taking place.
 ///
@@ -114,6 +115,9 @@ private:
     Rectangle* gameArea;
 
 	Player* player;
+
+	Block* block;
+
 };
 
 #endif //GAMESTATEGAME_H_DEFINED

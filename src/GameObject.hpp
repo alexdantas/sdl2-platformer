@@ -3,6 +3,14 @@
 
 #include "Shapes.hpp"
 
+/// Tells if the Object's outside it's boundaries,
+/// and if that's the case, which one is it.
+enum BoundaryStatus
+{
+	INSIDE_LIMITS,
+	OFF_TOP, OFF_BOTTOM, OFF_LEFT, OFF_RIGHT
+};
+
 /// Abstract stuff for any kind of game object.
 ///
 /// Nothing special here, move along.
@@ -35,6 +43,11 @@ public:
     ///
     void placeOnTop(GameObject* other);
 
+	/// Sets which area can the Object move around.
+	void setBoundary(Rectangle boundary);
+
+	BoundaryStatus actOnBoundaries();
+
     float getX();
     float getY();
     float getCenterX();
@@ -60,6 +73,9 @@ public:
     /// interfere.
     ///
     Rectangle* box;
+
+	Rectangle boundary;
+	BoundaryStatus boundaryStatus;
 };
 
 #endif /* GAMEOBJECT_H_DEFINED */

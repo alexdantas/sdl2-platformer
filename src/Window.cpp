@@ -233,4 +233,19 @@ unsigned int Window::getDelta()
 {
 	return this->current_frame_delta;
 }
+void Window::drawBox(Rectangle rect, Color color)
+{
+    boxRGBA(this->renderer,
+            rect.x, rect.y,
+            rect.rightmost, rect.bottom,
+            color.r(), color.g(), color.b(), color.a());
+}
+void Window::print(std::string text, int x, int y, Color color)
+{
+	stringRGBA(this->renderer,
+	           x, y,
+	           text.c_str(),
+	           color.r(), color.g(), color.b(), color.a());
+}
+
 

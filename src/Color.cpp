@@ -6,9 +6,9 @@ Color::Color()
 { }
 Color::Color(int color_mask)
 {
-	this->red = (color_mask >> 16) & 0xFF;
-	this->red = (color_mask >>  8) & 0xFF;
-	this->red =  color_mask        & 0xFF;
+	this->red   = (color_mask >> 16) & 0xFF;
+	this->green = (color_mask >>  8) & 0xFF;
+	this->blue  =  color_mask        & 0xFF;
 	this->alpha = 255;
 }
 Color::Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
@@ -18,11 +18,14 @@ Color::Color(std::string colorName)
 {
 	uint8_t r, g, b;
 
-	     if (colorName == "white") { r = 255; g = 255; b = 255; }
-	else if (colorName == "black") { r = 0;   g = 0;   b = 0;   }
-	else if (colorName == "red")   { r = 255; g = 0;   b = 0;   }
-	else if (colorName == "green") { r = 0;   g = 255; b = 0;   }
-	else if (colorName == "blue")  { r = 0;   g = 0;   b = 255; }
+	     if (colorName == "white")   { r = 255; g = 255; b = 255; }
+	else if (colorName == "black")   { r = 0;   g = 0;   b = 0;   }
+	else if (colorName == "red")     { r = 255; g = 0;   b = 0;   }
+	else if (colorName == "green")   { r = 0;   g = 255; b = 0;   }
+	else if (colorName == "blue")    { r = 0;   g = 0;   b = 255; }
+	else if (colorName == "cyan")    { r = 0;   g = 255; b = 255; }
+	else if (colorName == "yellow")  { r = 255; g = 255; b = 0;   }
+	else if (colorName == "magenta") { r = 255; g = 0;   b = 255; }
 
 	this->red   = r;
 	this->blue  = b;

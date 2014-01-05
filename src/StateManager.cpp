@@ -32,7 +32,6 @@ StateManager::~StateManager()
 void StateManager::run()
 {
 	bool letsQuit = false;
-
 	bool firstFrame = true;
 
 	while (!letsQuit)
@@ -48,7 +47,8 @@ void StateManager::run()
 		// on the first frame.
 		if (firstFrame)
 		{
-			delta = 1000.0/30.0;
+// WHAT THE FUCK
+//			delta = 1000.0/30.0;
 			firstFrame = false;
 		}
 
