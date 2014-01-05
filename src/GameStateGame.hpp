@@ -13,7 +13,7 @@
 #include "SFX.hpp"
 #include "Player.hpp"
 #include "Log.hpp"
-#include "Block.hpp"
+#include "BlockManager.hpp"
 
 /// This represents the actual game taking place.
 ///
@@ -116,7 +116,7 @@ private:
 
 	Player* player;
 
-	Block* block;
+	BlockManager* blocks;
 
 };
 

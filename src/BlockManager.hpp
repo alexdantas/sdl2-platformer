@@ -3,12 +3,15 @@
 
 #include <vector>
 #include "Block.hpp"
+#include "Shapes.hpp"
+#include "Window.hpp"
+#include "Color.hpp"
 
 ///
 class BlockManager
 {
 public:
-	BlockManager(unsigned int maxAmmount, Rectangle areaLimit);
+	BlockManager(Window* window, unsigned int maxAmmount, Rectangle areaLimit);
 	virtual ~BlockManager();
 
     /// Updates all the blocks inside it.
@@ -17,12 +20,24 @@ public:
     /// Renders all the blocks inside it.
     void render(float cameraX=0, float cameraY=0);
 
-	int currentAmmount();
+	/// Spawns a block at `x` `y`.
+	void add(float x, float y, Color color, BlockType type=REGULAR);
+
+    /// Adds a block at random inside the delimited area.
+	void addRandom();
+
+	unsigned int currentAmmount();
+
+	std::vector<Block*> blocks;
 
 private:
+	Window* window;
+
 	int maxAmmount;
 
-	std::vector<Block*>
+	Rectangle areaLimit;
+
+
 };
 
 #endif //BLOCKMANAGER_H_DEFINED

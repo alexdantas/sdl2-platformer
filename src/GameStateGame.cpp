@@ -21,7 +21,8 @@ GameStateGame::GameStateGame(Window* window):
 	bgmusic(nullptr),
 	sfx(nullptr),
 	gameArea(nullptr),
-	player(nullptr)
+	player(nullptr),
+	blocks(nullptr)
 { }
 GameStateGame::~GameStateGame()
 { }
@@ -34,6 +35,7 @@ void GameStateGame::load(int stack)
 	Log::log("+  Increase volume");
 	Log::log("-  Decrease volume");
 	Log::log("s  Play/pause SFX");
+	Log::log("m  Add Random Block");
 	Log::log("q  Quit");
 
 	this->bgmusic = new Music("sounds/music/bg.ogg");
@@ -56,10 +58,10 @@ void GameStateGame::load(int stack)
 
 	this->player->setBoundary(this->gameArea);
 
-	this->block= new Block(this->window,
-	                       30, 30, Color(255, 0, 255));
-
-	this->block->setBoundary(this->gameArea);
+	this->blocks= new BlockManager(this->window, 30, gameArea);
+	this->blocks->addRandom();
+	this->blocks->addRandom();
+	this->blocks->addRandom();
 }
 int GameStateGame::unload()
 {
@@ -77,7 +79,7 @@ GameState::StateCode GameStateGame::update(float dt)
 	this->updateInput();
 
 	this->player->update(dt);
-	this->block->update(dt);
+	this->blocks->update(dt);
 
 	// Must be at the end of this function
 	this->checkCollisions();
@@ -87,12 +89,15 @@ GameState::StateCode GameStateGame::update(float dt)
 void GameStateGame::render()
 {
 	this->player->render();
-	this->block->render();
+	this->blocks->render();
 }
 void GameStateGame::checkCollisions()
 {
 	this->player->commitMovement();
-	this->block->commitMovement();
+
+	// BAD CODING PRACTICE RIGHT HERE
+	for (unsigned int i = 0; i < this->blocks->blocks.size(); i++)
+		this->blocks->blocks[i]->commitMovement();
 }
 void GameStateGame::updateInput()
 {
@@ -156,6 +161,6 @@ void GameStateGame::updateInput()
 	}
 
 	if (input->isKeyDown(KEY_M))
-		this->window->minimize();
+		this->blocks->addRandom();
 }
 
