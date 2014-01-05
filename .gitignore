@@ -1,0 +1,6 @@
+/tmp/
+/platformer
+/windows/
+/Makefile.windows
+
+*.o
