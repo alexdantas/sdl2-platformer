@@ -45,6 +45,14 @@ bool GameObject::collidedWith(GameObject* other)
 {
     return (this->box->overlaps(other->box));
 }
+void GameObject::placeOnTop(GameObject* other)
+{
+	this->box->placeOnTop(other->box);
+
+	this->position->x = other->position->x;
+	this->position->y = other->position->y;
+}
+
 void GameObject::setBoundary(Rectangle boundary)
 {
 	this->boundary = boundary;

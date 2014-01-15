@@ -88,16 +88,16 @@ GameState::StateCode GameStateGame::update(float dt)
 }
 void GameStateGame::render()
 {
-	this->player->render();
 	this->blocks->render();
+	this->player->render();
 }
 void GameStateGame::checkCollisions()
 {
 	this->player->commitMovement();
 
-	// BAD CODING PRACTICE RIGHT HERE
-	for (unsigned int i = 0; i < this->blocks->blocks.size(); i++)
-		this->blocks->blocks[i]->commitMovement();
+	// // BAD CODING PRACTICE RIGHT HERE
+	// for (unsigned int i = 0; i < this->blocks->blocks.size(); i++)
+	// 	this->blocks->blocks[i]->commitMovement();
 }
 void GameStateGame::updateInput()
 {

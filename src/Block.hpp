@@ -19,6 +19,9 @@ enum BlockType
 class Block: public FallingObject,
              public DamageableObject
 {
+	// Let the BlockManager modify internal vy
+	friend class BlockManager;
+
 public:
 	Block(Window* window, float x, float y, Color color, BlockType type=REGULAR);
 

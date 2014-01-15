@@ -17,6 +17,8 @@ public:
     /// Updates all the blocks inside it.
     void update(float dt);
 
+	void checkCollisions();
+
     /// Renders all the blocks inside it.
     void render(float cameraX=0, float cameraY=0);
 

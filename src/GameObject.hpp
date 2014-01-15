@@ -55,6 +55,8 @@ public:
     int   getWidth();
     int   getHeight();
 
+	// CHANGE THIS SO IT ONLY HAVE THE BOX
+
     /// Object's x/y position.
     Point* position;
 

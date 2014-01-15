@@ -108,13 +108,7 @@ void Rectangle::update()
 }
 bool Rectangle::overlaps(Rectangle other)
 {
-	if ((      x <= other.rightmost) &&
-	    (other.x <= rightmost)       &&
-	    (      y <= other.bottom)    &&
-	    (other.y <= bottom))
-		return true;
-
-	return false;
+	return this->overlaps(&other);
 }
 bool Rectangle::overlaps(Rectangle* other)
 {
